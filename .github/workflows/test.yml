@@ -1,0 +1,31 @@
+name: test
+
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'main'
+  pull_request:
+    branches:
+      - 'develop'
+      - 'main'
+    types: [closed]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terraform_ci:
+    name: Terraform CI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    steps:
+      - name: dump github context
+        env:
+          _GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$_GITHUB_CONTEXT"
