@@ -54,7 +54,7 @@ jobs:
           PR_NUMBER=[[ "${PR_NUMBER}" == 'null' ]] && echo "" || echo "${PR_NUMBER}"
           echo "::set-output name=pull_request_number::$(echo $PR_NUMBER)"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
           HASH: ${{ github.sha }}
