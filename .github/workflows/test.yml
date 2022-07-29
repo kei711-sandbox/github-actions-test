@@ -54,7 +54,7 @@ jobs:
           PR_NUMBER=[[ "${PR_NUMBER}" == 'null' ]] && echo "" || echo "${PR_NUMBER}"
           echo "::set-output name=pull_request_number::$(echo $PR_NUMBER)"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
           HASH: ${{ github.sha }}
@@ -65,3 +65,5 @@ jobs:
         run: echo '### [PR \#${{ steps.pr.outputs.pull_request_number }}](${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.pr.outputs.pull_request_number }})' >> $GITHUB_STEP_SUMMARY
 
       - run: gh pr comment ${{ steps.pr.outputs.pull_request_number }} --body "test ${{ steps.pr.outputs.pull_request_number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
