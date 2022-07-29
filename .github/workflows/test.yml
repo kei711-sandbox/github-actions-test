@@ -34,7 +34,7 @@ jobs:
         id: pr
         shell: bash
         run: |
-          PR_NUMBER=$(gh api graphql -F owner=$OWNER -F repo=$REPO -F hash=${} -f query='
+          PR_NUMBER=$(gh api graphql -F owner=$OWNER -F repo=$REPO -F hash=$HASH -f query='
             query($repo:String!, $owner:String!, $hash:String!) {
               repository(name: $repo, owner: $owner) {
                    object(expression: $hash) {
