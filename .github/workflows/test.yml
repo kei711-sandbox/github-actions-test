@@ -29,3 +29,39 @@ jobs:
         env:
           _GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$_GITHUB_CONTEXT"
+
+      - name: Get Pull Request Number
+        id: pr
+        shell: bash
+        run: |
+          PR_NUMBER=$(gh api graphql -F owner=$OWNER -F repo=$REPO -F hash=${} -f query='
+            query($repo:String!, $owner:String!, $hash:String!) {
+              repository(name: $repo, owner: $owner) {
+                   object(expression: $hash) {
+                     ... on Commit {
+                       associatedPullRequests(first: 1) {
+                         edges {
+                           node {
+                             number
+                           }
+                         }
+                       }
+                     }
+                  }
+                }
+              }
+          ' | jq '.data.repository.object.associatedPullRequests.edges[0].node.number')
+          PR_NUMBER=[[ "${PR_NUMBER}" == 'null' ]] && echo "" || echo "${PR_NUMBER}"
+          echo "::set-output name=pull_request_number::$(echo $PR_NUMBER)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          HASH: ${{ github.sha }}
+
+      - name: Show URL
+        run: echo Pull Request is ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.pr.outputs.pull_request_number }}
+      - name: Adding markdown
+        run: echo '### [PR \#${{ steps.pr.outputs.pull_request_number }}](${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.pr.outputs.pull_request_number }})' >> $GITHUB_STEP_SUMMARY
+
+      - run: gh pr comment ${{ steps.pr.outputs.pull_request_number }} --body "test ${{ steps.pr.outputs.pull_request_number }}"
