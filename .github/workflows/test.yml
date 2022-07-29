@@ -61,11 +61,17 @@ jobs:
           HASH: ${{ github.sha }}
 
       - name: Show URL
+        if: steps.pr.outputs.pull_request_number != ''
         run: echo Pull Request is ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.pr.outputs.pull_request_number }}
       - name: Adding markdown
+        if: steps.pr.outputs.pull_request_number != ''
         run: echo '### [PR \#${{ steps.pr.outputs.pull_request_number }}](${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.pr.outputs.pull_request_number }})' >> $GITHUB_STEP_SUMMARY
 
       - run: gh pr comment ${{ steps.pr.outputs.pull_request_number }} --body "test ${{ steps.pr.outputs.pull_request_number }}"
+        if: steps.pr.outputs.pull_request_number != ''
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: echo 'empty pr_number'
+        if: steps.pr.outputs.pull_request_number == ''
